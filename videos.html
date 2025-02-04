@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playlist Progress</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+    .progress-container { position: relative; width: 120px; height: 120px; margin: auto; }
+    .progress-circle { transform: rotate(-90deg); width: 100%; height: 100%; }
+    .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; font-weight: bold; }
+    .video-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
+    .video-card { width: 220px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); background-color: white; transition: 0.3s; cursor: pointer; }
+    .video-card img { width: 100%; border-radius: 8px; cursor: pointer; }
+    .watched { background-color: #d3ffd3 !important; }
+    .load-more { padding: 10px 20px; margin-top: 20px; cursor: pointer; border: none; background-color: #FF69B4; color: white; font-size: 16px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Playlist Videos</h1>
+
+  <!-- Circular Progress Bar -->
+  <div class="progress-container">
+    <svg class="progress-circle" viewBox="0 0 36 36">
+      <path class="progress-bar-bg" fill="none" stroke="#f3f3f3" stroke-width="4" d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"></path>
+      <path class="progress-bar" fill="none" stroke="#FF0000" stroke-width="4" stroke-dasharray="100, 100" d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"></path>
+    </svg>
+    <span class="progress-text">0%</span>
+  </div>
+
+  <div class="video-container" id="videosList"></div>
+  <button class="load-more" onclick="loadMoreVideos()">Load More Videos</button>
+
+  <script>
+    const API_KEY = "AIzaSyDEN8VXe2Bda0rD8h7P6H_AeuQjw5IPYs4";
+    let playlistId = new URLSearchParams(window.location.search).get("playlistId");
+    let nextPageToken = "";
+    let totalPlaylistMinutes = 0;
+    let watchedMinutes = 0;
+    let videoDurations = {};
+    let allVideos = [];
+
+    function fetchPlaylistVideos() {
+      if (!playlistId) {
+        alert("No playlist ID found!");
+        return;
+      }
+
+      const apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=50&pageToken=${nextPageToken}&key=${API_KEY}`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          allVideos = [...allVideos, ...data.items];
+          nextPageToken = data.nextPageToken || "";
+          renderVideos(data.items);
+
+          if (nextPageToken) {
+            document.querySelector(".load-more").style.display = "block";
+          } else {
+            document.querySelector(".load-more").style.display = "none";
+          }
+
+          getVideoDurations(data.items.map(video => video.snippet.resourceId.videoId));
+        })
+        .catch(error => console.error("Error fetching playlist:", error));
+    }
+
+    function loadMoreVideos() {
+      fetchPlaylistVideos();
+    }
+
+    function getVideoDurations(videoIds) {
+      const durationApiUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds.join(",")}&key=${API_KEY}`;
+
+      fetch(durationApiUrl)
+        .then(response => response.json())
+        .then(data => {
+          data.items.forEach(video => {
+            const videoId = video.id;
+            const duration = parseISO8601Duration(video.contentDetails.duration);
+            videoDurations[videoId] = duration;
+            totalPlaylistMinutes += duration;
+          });
+
+          updateProgress();
+        })
+        .catch(error => console.error("Error fetching video durations:", error));
+    }
+
+    function parseISO8601Duration(duration) {
+      let match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+      let hours = match[1] ? parseInt(match[1].replace("H", "")) : 0;
+      let minutes = match[2] ? parseInt(match[2].replace("M", "")) : 0;
+      let seconds = match[3] ? parseInt(match[3].replace("S", "")) : 0;
+      return hours * 60 + minutes + seconds / 60;
+    }
+
+    function renderVideos(videos) {
+      const videosList = document.getElementById("videosList");
+
+      videos.forEach(video => {
+        const videoId = video.snippet.resourceId.videoId;
+        const thumbnailUrl = video.snippet.thumbnails.medium.url;
+        const title = video.snippet.title;
+        const watchedVideos = JSON.parse(localStorage.getItem("watchedVideos")) || [];
+
+        const videoCard = document.createElement("div");
+        videoCard.classList.add("video-card");
+        if (watchedVideos.includes(videoId)) {
+          videoCard.classList.add("watched");
+        }
+
+        videoCard.innerHTML = `
+          <img src="${thumbnailUrl}" onclick="openVideo(event, '${videoId}')" alt="${title}">
+          <p>${title}</p>
+        `;
+
+        videoCard.addEventListener("click", (event) => {
+          if (!event.target.closest("img")) {
+            toggleWatched(videoCard, videoId);
+          }
+        });
+
+        videosList.appendChild(videoCard);
+      });
+
+      updateProgress();
+    }
+
+    function openVideo(event, videoId) {
+      event.stopPropagation();
+      window.open(`https://www.youtube.com/watch?v=${videoId}`, "_blank");
+    }
+
+    function toggleWatched(videoCard, videoId) {
+      let watchedVideos = JSON.parse(localStorage.getItem("watchedVideos")) || [];
+
+      if (watchedVideos.includes(videoId)) {
+        watchedVideos = watchedVideos.filter(id => id !== videoId);
+        watchedMinutes -= videoDurations[videoId] || 0;
+        videoCard.classList.remove("watched");
+      } else {
+        watchedVideos.push(videoId);
+        watchedMinutes += videoDurations[videoId] || 0;
+        videoCard.classList.add("watched");
+      }
+
+      localStorage.setItem("watchedVideos", JSON.stringify(watchedVideos));
+      updateProgress();
+    }
+
+    function updateProgress() {
+      let progress = totalPlaylistMinutes > 0 ? (watchedMinutes / totalPlaylistMinutes) * 100 : 0;
+      document.querySelector(".progress-text").innerText = `${Math.round(progress)}%`;
+      document.querySelector(".progress-bar").setAttribute("stroke-dasharray", `${progress}, 100`);
+    }
+
+    fetchPlaylistVideos();
+  </script>
+</body>
+</html>
