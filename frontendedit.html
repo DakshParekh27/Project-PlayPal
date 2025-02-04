@@ -1,0 +1,614 @@
+//features : thumbnail called, No playlist yet each empty case mein hai..
+
+//demerits : after initialising card from form, form inputs are NOT flushed
+
+//general improvement : integrate videos.html at clicking thumbnail
+//                      then add other calc backend features
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayPal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.1/gsap.min.js"></script>
+    <style>
+/* General Body Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(#F4EFEF);
+    background-size: 400% 400%;
+    animation: gradientAnimation 6s ease infinite;
+    overflow-x: hidden;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Navbar Styling */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #FF0000;
+    padding: 15px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.logo-container {
+    background: white; /* White background for the logo box */
+    padding: 15px 25px; /* Adjust padding to create a rectangular effect */
+    border-radius: 5px; /* Slightly rounded corners */
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 50px; /* Adjust size as needed */
+    width: auto;
+}
+
+.product-name {
+    color: white; /* Text color */
+    font-size: 20px; /* Adjust size */
+    font-weight: bold;
+    margin-left: 10px; /* Space between logo box and text */
+}
+/* Centered Search Box */
+.search-box {
+    flex: 1;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid black;
+    border-radius: 20px;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Right Section: Icons & Dark Mode Button */
+.right-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Dark Mode Button */
+.dark-mode-btn {
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+}
+
+.dark-mode-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        text-align: center;
+        padding: 10px;
+    }
+
+   
+
+    .search-box {
+        width: 80%;
+        margin: 10px 0;
+    }
+
+    .right-section {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    
+
+    .search-box {
+        width: 90%;
+    }
+}
+
+/* Playlist Button */
+#createPlaylistBtn {
+    position: fixed;
+    right: 35px;
+    bottom: 30px;
+    padding: 15px 30px;
+    background-color: #FF0000;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 1001;
+}
+
+#createPlaylistBtn:hover {
+    background-color: #ff4500;
+    transform: scale(1.05);
+}
+
+/* Playlist Card Styling */
+.playlist-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    margin-top: 100px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.playlist-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 280px;
+}
+
+.playlist-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.playlist-card .content {
+    padding: 15px;
+    text-align: center;
+}
+
+.playlist-card .content h4 {
+    margin: 0 0 10px;
+}
+
+.playlist-card button {
+    background-color: #ff4500;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.playlist-card button:hover {
+    background-color: #d63d00;
+}
+
+/* Custom Confirmation Dialog */
+.confirm-dialog {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1a1a1a;
+    padding: 30px;
+    border-radius: 15px;
+    width: 300px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    color: white;
+    text-align: center;
+    z-index: 1002;
+}
+
+.confirm-dialog button {
+    padding: 10px 20px;
+    margin: 10px 5px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.confirm-dialog .confirm-btn {
+    background-color: #32CD32;
+    color: white;
+}
+
+.confirm-dialog .confirm-btn:hover {
+    background-color: #228B22;
+}
+
+.confirm-dialog .cancel-btn {
+    background-color: #dc143c;
+    color: white;
+}
+
+.confirm-dialog .cancel-btn:hover {
+    background-color: #FF0000;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #36393e;
+    color: #ffffff;
+}
+
+/* Button Styling */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #FF0000;
+    color: white;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background-color: #52c8e8;
+}
+
+/* Sun and Moon Theme Toggle */
+@import "https://unpkg.com/open-props/easings.min.css";
+
+.sun-and-moon> :is(.moon, .sun, .sun-beams) {
+    transform-origin: center;
+}
+
+.sun-and-moon> :is(.moon, .sun) {
+    fill: var(--icon-fill);
+}
+
+.theme-toggle:is(:hover, :focus-visible)>.sun-and-moon> :is(.moon, .sun) {
+    fill: var(--icon-fill-hover);
+}
+
+.sun-and-moon>.sun-beams {
+    stroke: var(--icon-fill);
+    stroke-width: 2px;
+}
+
+.theme-toggle:is(:hover, :focus-visible) .sun-and-moon>.sun-beams {
+    stroke: var(--icon-fill-hover);
+}
+
+[data-theme="dark"] .sun-and-moon>.sun {
+    transform: scale(1.75);
+}
+
+[data-theme="dark"] .sun-and-moon>.sun-beams {
+    opacity: 0;
+}
+
+[data-theme="dark"] .sun-and-moon>.moon>circle {
+    transform: translateX(-7px);
+}
+
+@supports (cx: 1) {
+    [data-theme="dark"] .sun-and-moon>.moon>circle {
+        cx: 17;
+        transform: translateX(0);
+    }
+}
+.form-popup {
+    display: none; /* Hide initially */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: black;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    z-index: 1000;
+}
+
+.form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: white;
+    border-radius:14px;
+}
+
+.cancelBtn {
+    background: #FF0000;
+    color: white;
+    padding: 10px 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.cancelBtn:hover {
+    background: #B22222;
+}
+
+.no-playlists-message {
+    color: #333; /* Dark gray for visibility in light mode */
+}
+
+body.dark-mode .no-playlists-message {
+    color: white; /* White for visibility in dark mode */
+}
+
+
+
+
+
+    </style>
+</head>
+
+<body>
+
+    <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite">
+        <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+            <mask class="moon" id="moon-mask">
+                <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                <circle cx="24" cy="10" r="6" fill="black" />
+            </mask>
+            <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
+            <g class="sun-beams" stroke="currentColor">
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </g>
+        </svg>
+    </button>
+    
+
+    <div class="navbar">
+        <img src="Logo.jpeg" alt="PlayPal Logo" class="logo">
+        <span class="product-name">PlayPal</span>
+        <input type="text" class="search-box" id="searchBox" placeholder="Search Playlists..."
+        
+            oninput="filterPlaylists()">
+        <div class="right-icons">
+            <div class="container">
+                <button id="darkModeToggle">🌙</button>
+            </div>
+        </div>
+    </div>
+
+    <button id="createPlaylistBtn">Create Playlist</button>
+
+    <div id="playlistForm" class="form-popup">
+        <form class="form-content">
+            <label for="playlistName">Playlist Name:</label>
+            <input type="text" id="playlistName" required>
+
+            <label for="playlistLink">Playlist Link:</label>
+            <input type="url" id="playlistLink" required>
+
+            <button type="submit">Create</button>
+            <button type="button" class="cancelBtn">Cancel</button>
+        </form>
+    </div>
+
+    <div id="playlistContainer" class="playlist-container"></div>
+
+    <div id="confirmDialog" class="confirm-dialog">
+        <p>Are you sure you want to delete this playlist?</p>
+        <button class="confirm-btn" onclick="deleteConfirmed()">Yes</button>
+        <button class="cancel-btn" onclick="closeConfirmDialog()">No</button>
+    </div>
+
+<script>
+    let playlists = JSON.parse(localStorage.getItem('playlists')) || [];
+    const playlistContainer = document.getElementById('playlistContainer');
+
+    window.onload = function () {
+        displayPlaylists();
+    };
+
+    const createPlaylistBtn = document.getElementById('createPlaylistBtn');
+    const playlistForm = document.getElementById('playlistForm');
+    const cancelBtn = document.querySelector('.cancelBtn');
+
+    createPlaylistBtn.addEventListener('click', () => {
+        gsap.to(playlistForm, { duration: 0.5, opacity: 1, scale: 1 });
+        playlistForm.style.display = 'block';
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        gsap.to(playlistForm, {
+            duration: 0.3, opacity: 0, scale: 0.7, onComplete: () => {
+                playlistForm.style.display = 'none';
+            }
+        });
+    });
+
+    document.querySelector('.form-content').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const link = document.getElementById('playlistLink').value;
+        const playlistId = extractPlaylistId(link);
+
+        if (playlistId) {
+            const thumbnail = await fetchPlaylistThumbnail(playlistId);
+            const newPlaylist = { link, image: thumbnail };
+            playlists.push(newPlaylist);
+            localStorage.setItem('playlists', JSON.stringify(playlists));
+            displayPlaylists();
+            playlistForm.style.display = 'none';
+        } else {
+            alert("Invalid YouTube playlist URL!");
+        }
+    });
+
+    function extractPlaylistId(url) {
+        const regex = /[?&]list=([a-zA-Z0-9_-]+)/;
+        const match = url.match(regex);
+        return match ? match[1] : null;
+    }
+
+    async function fetchPlaylistThumbnail(playlistId) {
+        const API_KEY = "AIzaSyDEN8VXe2Bda0rD8h7P6H_AeuQjw5IPYs4";
+        const apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=1&key=${API_KEY}`;
+
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            return data.items[0]?.snippet?.thumbnails?.medium?.url || "https://via.placeholder.com/150";
+        } catch (error) {
+            console.error("Error fetching thumbnail:", error);
+            return "https://via.placeholder.com/150";
+        }
+    }
+
+    function displayPlaylists() {
+        playlistContainer.innerHTML = ""; // Clear previous content
+
+        if (playlists.length === 0) {
+            const noPlaylistsMessage = document.createElement("p");
+            noPlaylistsMessage.classList.add("no-playlists-message");
+            noPlaylistsMessage.textContent = "No Playlists Yet!";
+            playlistContainer.appendChild(noPlaylistsMessage);
+            return;
+        }
+
+        playlists.forEach((playlist, index) => {
+            const card = document.createElement('div');
+            card.classList.add('playlist-card');
+            card.innerHTML = `
+                    <img src="${playlist.image}" alt="Thumbnail">
+                    <div class="content">
+                        <button onclick="confirmDelete(${index})">Delete</button>
+                    </div>
+                `;
+            playlistContainer.appendChild(card);
+        });
+    }
+
+    function confirmDelete(index) {
+        deleteIndex = index;
+        document.getElementById('confirmDialog').style.display = 'block';
+        gsap.fromTo('#confirmDialog', { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.3 });
+    }
+
+    function closeConfirmDialog() {
+        gsap.to('#confirmDialog', {
+            opacity: 0, scale: 0.7, duration: 0.3, onComplete: () => {
+                document.getElementById('confirmDialog').style.display = 'none';
+            }
+        });
+        deleteIndex = null;
+    }
+
+    function deleteConfirmed() {
+        if (deleteIndex !== null) {
+            playlists.splice(deleteIndex, 1);
+            localStorage.setItem('playlists', JSON.stringify(playlists));
+            displayPlaylists();
+        }
+        closeConfirmDialog();
+    }
+
+    function filterPlaylists() {
+        const search = document.getElementById('searchBox').value.toLowerCase();
+        const filtered = playlists.filter(p => p.name.toLowerCase().includes(search));
+        displayPlaylists(filtered);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let playlists = JSON.parse(localStorage.getItem("playlists")) || [];
+        displayPlaylists();
+    });
+
+    // Dark Mode Toggle
+    const toggleButton = document.getElementById("darkModeToggle");
+
+    if (localStorage.getItem("darkMode") === "enabled") {
+        document.body.classList.add("dark-mode");
+        toggleButton.textContent = "☀️";
+    }
+
+    toggleButton.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+
+        if (document.body.classList.contains("dark-mode")) {
+            localStorage.setItem("darkMode", "enabled");
+            toggleButton.textContent = "☀️";
+        } else {
+            localStorage.setItem("darkMode", "disabled");
+            toggleButton.textContent = "🌙";
+        }
+    });
+
+    // Theme Preference
+    const storageKey = 'theme-preference';
+
+    const onClick = () => {
+        theme.value = theme.value === 'light' ? 'dark' : 'light';
+        setPreference();
+    };
+
+    const getColorPreference = () => {
+        if (localStorage.getItem(storageKey))
+            return localStorage.getItem(storageKey);
+        else
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const setPreference = () => {
+        localStorage.setItem(storageKey, theme.value);
+        reflectPreference();
+    };
+
+    const reflectPreference = () => {
+        document.firstElementChild.setAttribute('data-theme', theme.value);
+        document.querySelector('#theme-toggle')?.setAttribute('aria-label', theme.value);
+    };
+
+    const theme = {
+        value: getColorPreference(),
+    };
+
+    reflectPreference();
+
+    window.onload = () => {
+        reflectPreference();
+        document.querySelector('#theme-toggle').addEventListener('click', onClick);
+    };
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches: isDark }) => {
+        theme.value = isDark ? 'dark' : 'light';
+        setPreference();
+    });
+</script>
+
+
+
+</body>
+
+</html>
