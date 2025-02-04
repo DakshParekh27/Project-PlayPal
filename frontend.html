@@ -341,6 +341,15 @@ button:hover {
     background: #B22222;
 }
 
+.no-playlists-message {
+    color: #333; /* Dark gray for visibility in light mode */
+}
+
+body.dark-mode .no-playlists-message {
+    color: white; /* White for visibility in dark mode */
+}
+
+
 
 
 
@@ -452,18 +461,17 @@ button:hover {
         });
 
         function displayPlaylists(playlists) {
-            playlistContainer.innerHTML = playlists.length === 0 ? '<p style="text-align:center; color:white;">No Playlists Yet!</p>' : '';
+            playlistContainer.innerHTML = playlists.length === 0 ? '<p class="no-playlists-message">No Playlists Yet!</p>' : '';
             playlists.forEach((playlist, index) => {
                 const card = document.createElement('div');
                 card.classList.add('playlist-card');
                 card.innerHTML = `
-                    <a href="${playlist.link}" target="_blank">
                         <img src="${playlist.image}" alt="Thumbnail">
                         <div class="content">
                             <h4>${playlist.name}</h4>
                             <button onclick="confirmDelete(${index})">Delete</button>
                         </div>
-                    </a>`;
+                    `;
                 playlistContainer.appendChild(card);
                 gsap.from(card, { duration: 0.6, opacity: 0, y: 50 * (index + 1) });
             });
@@ -526,13 +534,12 @@ button:hover {
                     card.dataset.index = index;
 
                     card.innerHTML = `
-                <a href="${playlist.link}" target="_blank">
                     <img src="${playlist.image}" alt="Thumbnail">
                     <div class="content">
                         <h4>${playlist.name}</h4>
                         <button onclick="confirmDelete(${index})">Delete</button>
                     </div>
-                </a>`;
+                `;
 
                     card.addEventListener("dragstart", handleDragStart);
                     card.addEventListener("dragover", handleDragOver);
