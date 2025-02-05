@@ -466,6 +466,8 @@ body.dark-mode .no-playlists-message {
                 playlistForm.style.display = 'none';
             }
         });
+        document.getElementById('playlistLink').value = "";
+        document.getElementById('playlistName').value = "";
     });
 
     document.querySelector('.form-content').addEventListener('submit', async (e) => {
@@ -523,7 +525,7 @@ body.dark-mode .no-playlists-message {
             const card = document.createElement('div');
             card.classList.add('playlist-card');
             card.innerHTML = `
-                    <img src="${playlist.image}" alt="Thumbnail">
+                    <img onclick="goToPlaylistPage('${playlist.link}')" src="${playlist.image}" alt="Thumbnail">
                     <div class="content">
                         <p class="playlist-name">${playlist.name}</p>
                         <button onclick="confirmDelete(${index})">Delete</button>
@@ -531,6 +533,19 @@ body.dark-mode .no-playlists-message {
                 `;
             playlistContainer.appendChild(card);
         });
+    }
+
+    
+    function goToPlaylistPage(link) {
+
+        let playlistId = extractPlaylistId(link);
+
+      if (playlistId) {
+        // Redirect to videos.html with playlistId in the URL
+        window.location.href = `videos.html?playlistId=${playlistId}`;
+      } else {
+        alert("Please enter a valid YouTube playlist URL!");
+      }
     }
 
     function confirmDelete(index) {
