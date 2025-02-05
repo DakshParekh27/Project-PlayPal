@@ -1,6 +1,5 @@
-//features : thumbnail called, No playlist yet each empty case mein hai..
+//features : thumbnail called, "No playlist yet" each empty case mein hai..
 
-//demerits : after initialising card from form, form inputs are NOT flushed
 
 //general improvement : integrate videos.html at clicking thumbnail
 //                      then add other calc backend features
@@ -196,6 +195,9 @@ body {
     margin: 0 0 10px;
 }
 
+
+
+
 .playlist-card button {
     background-color: #ff4500;
     color: white;
@@ -257,6 +259,23 @@ body {
 body.dark-mode {
     background-color: #36393e;
     color: #ffffff;
+}
+
+
+:root {
+    --text-color: #000; /* Default light mode text color */
+}
+
+.dark-mode {
+    --text-color: #070707; /* Dark mode text color */
+}
+
+.playlist-name {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 5px;
+    color: var(--text-color); /* Use variable for STATIC color change */
 }
 
 /* Button Styling */
@@ -452,11 +471,14 @@ body.dark-mode .no-playlists-message {
     document.querySelector('.form-content').addEventListener('submit', async (e) => {
         e.preventDefault();
         const link = document.getElementById('playlistLink').value;
+        const name = document.getElementById('playlistName').value;
         const playlistId = extractPlaylistId(link);
+        document.getElementById('playlistLink').value = "";
+        document.getElementById('playlistName').value = "";
 
         if (playlistId) {
             const thumbnail = await fetchPlaylistThumbnail(playlistId);
-            const newPlaylist = { link, image: thumbnail };
+            const newPlaylist = { name, link, image: thumbnail };
             playlists.push(newPlaylist);
             localStorage.setItem('playlists', JSON.stringify(playlists));
             displayPlaylists();
@@ -503,6 +525,7 @@ body.dark-mode .no-playlists-message {
             card.innerHTML = `
                     <img src="${playlist.image}" alt="Thumbnail">
                     <div class="content">
+                        <p class="playlist-name">${playlist.name}</p>
                         <button onclick="confirmDelete(${index})">Delete</button>
                     </div>
                 `;
