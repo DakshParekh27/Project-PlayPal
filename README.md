@@ -15,9 +15,10 @@
         <li><strong>Social Learning (If time allows):</strong> Add friends, collaborate in playlists, track progress, and maintain streaks   together.</li>
     </ul>
     <p>Let’s turn YouTube into your ultimate learning buddy!</p>
+  
+## Table of Contents:
 
- <h3>Project Features:</h3>
-    <ul>
+<ul>
         <li><strong>Custom Playlist Scheduling:</strong> Generate a personalized schedule by inputting your free time and playlist link.</li>
         <li><strong>Progress Tracking:</strong> Mark videos as watched and view your completion percentage in real time.</li>
         <li><strong>Motivational Reminders:</strong> Get notifications if you miss a planned session to keep you consistent.</li>
@@ -25,8 +26,7 @@
         <li><strong>Social Learning (If time allows):</strong> Add friends to shared playlists, track each other's progress, and maintain streaks together.</li>
         <li><strong>Responsive Design:</strong> Ensure a smooth user experience across desktop, tablet, and mobile devices.</li>
   </ul>
-  
-## Table of Contents:
+
 
 ## Technology Stack:
   <ul>
@@ -50,5 +50,4 @@ Team Name: PlayPal
 
 ### Made at:
 
-<br>
 <a href="https://weekendofcode.computercodingclub.in/"> <img src="https://i.postimg.cc/Z9fC676j/devjam.jpg" height=30px> </a>
