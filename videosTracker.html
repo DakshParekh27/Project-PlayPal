@@ -4,32 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Playlist Progress</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
-    .progress-container { position: relative; width: 120px; height: 120px; margin: auto; }
-    .progress-circle { transform: rotate(-90deg); width: 100%; height: 100%; }
-    .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; font-weight: bold; }
-    .video-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
-    .video-card { width: 220px; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); background-color: white; transition: 0.3s; cursor: pointer; }
-    .video-card img { width: 100%; border-radius: 8px; cursor: pointer; }
-    .watched { background-color: #d3ffd3 !important; }
-    .load-more { padding: 10px 20px; margin-top: 20px; cursor: pointer; border: none; background-color: #FF69B4; color: white; font-size: 16px; border-radius: 5px; }
-  </style>
+  <link rel="stylesheet" href="videosTracker.css">
 </head>
 <body>
-  <h1>Playlist Videos</h1>
 
-  <!-- Circular Progress Bar -->
-  <div class="progress-container">
-    <svg class="progress-circle" viewBox="0 0 36 36">
-      <path class="progress-bar-bg" fill="none" stroke="#f3f3f3" stroke-width="4" d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"></path>
-      <path class="progress-bar" fill="none" stroke="#FF0000" stroke-width="4" stroke-dasharray="100, 100" d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"></path>
-    </svg>
-    <span class="progress-text">0%</span>
-  </div>
+    <!-- 🔴 Navbar with Progress Tracker & Playlist Title -->
+    <div class="navbar">
+        <!-- Left: Progress Tracker -->
+        <div class="progress-container">
+            <svg class="progress-circle" viewBox="0 0 36 36">
+                <path class="progress-bar-bg" fill="none" stroke="#f3f3f3" stroke-width="4"
+                      d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"></path>
+                <path class="progress-bar" fill="none" stroke="#FF0000" stroke-width="4" stroke-dasharray="100, 100"
+                      d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"></path>
+            </svg>
+            <span class="progress-text">0%</span>
+        </div>
 
-  <div class="video-container" id="videosList"></div>
-  <button class="load-more" onclick="loadMoreVideos()">Load More Videos</button>
+        <!-- Center: Playlist Title -->
+        <div class="playlist-title">Playlist Videos</div>
+    </div>
+
+    <!-- 📺 Video List Container -->
+    <div class="video-container" id="videosList"></div>
+
+    <!-- 🔄 Load More Button -->
+    <button class="load-more" onclick="loadMoreVideos()">Load More Videos</button>
 
   <script>
     const API_KEY = "AIzaSyDEN8VXe2Bda0rD8h7P6H_AeuQjw5IPYs4";
@@ -149,12 +149,22 @@
       localStorage.setItem("watchedVideos", JSON.stringify(watchedVideos));
       updateProgress();
     }
+function updateProgress() {
+    let watchedVideos = JSON.parse(localStorage.getItem("watchedVideos")) || [];
+    
+    // Recalculate watched minutes based on stored watched videos
+    watchedMinutes = watchedVideos.reduce((total, videoId) => total + (videoDurations[videoId] || 0), 0);
 
-    function updateProgress() {
-      let progress = totalPlaylistMinutes > 0 ? (watchedMinutes / totalPlaylistMinutes) * 100 : 0;
-      document.querySelector(".progress-text").innerText = `${Math.round(progress)}%`;
-      document.querySelector(".progress-bar").setAttribute("stroke-dasharray", `${progress}, 100`);
-    }
+    // Calculate progress percentage
+    let progress = totalPlaylistMinutes > 0 ? (watchedMinutes / totalPlaylistMinutes) * 100 : 0;
+
+    // Ensure progress never goes below 0%
+    progress = Math.max(0, progress);
+
+    document.querySelector(".progress-text").innerText = `${Math.round(progress)}%`;
+    document.querySelector(".progress-bar").setAttribute("stroke-dasharray", `${progress}, 100`);
+}
+
 
     fetchPlaylistVideos();
   </script>

@@ -1,0 +1,125 @@
+/* General Body Styling */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f9f9f9;
+}
+
+/* 🔴 Red Navbar */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #FF0000;
+  padding: 10px 15px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  height: 60px;
+}
+
+/* Left: Progress Tracker */
+.progress-container {
+   position: relative;
+  width: 60px; /* Fixed size */
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Circular Progress Bar */
+.progress-circle {
+  width: 100%;
+  height: 100%;
+}
+
+.progress-text {
+position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  white-space: nowrap;
+}
+
+/* Center: Playlist Title */
+.playlist-title {
+  flex: 1;
+  text-align: center;
+}
+
+/* 🔄 Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
+
+  .progress-container {
+    width: 50px;
+    height: 50px;
+  }
+
+  .progress-text {
+    font-size: 10px;
+  }
+
+  .playlist-title {
+    font-size: 16px;
+  }
+}
+
+/* 🎬 Video Container */
+.video-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 80px; /* Adjusted for fixed navbar */
+}
+
+/* 📺 Video Card */
+.video-card {
+  width: 220px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.video-card img {
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ✅ Watched Video */
+.watched {
+  background-color: #d3ffd3 !important;
+}
+
+/* 🔄 Load More Button */
+.load-more {
+  padding: 10px 20px;
+  margin-top: 20px;
+  cursor: pointer;
+  border: none;
+  background-color: #ff0000;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+}
