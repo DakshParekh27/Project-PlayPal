@@ -19,11 +19,11 @@
 ## Table of Contents:
 
 <ul>
-        <li><strong>Custom Playlist Scheduling:</strong> Generate a personalized schedule by inputting your free time and playlist link.</li>
-        <li><strong>Progress Tracking:</strong> Mark videos as watched and view your completion percentage in real time.</li>
-        <li><strong>Motivational Reminders:</strong> Get notifications if you miss a planned session to keep you consistent.</li>
+        <li><strong>Carry your 'Grind': </strong>Ensure consistency by maintaining streaks with Grind Points.</li>
+        <li><strong>Have an Academic Comeback with 'Clutch':Boost confidence by overkilling the Grind. </strong>
+        <li><strong>Progress Tracking: </strong>Mark videos as watched and view your completion percentage in real time.</li>
         <li><strong>Playlist Overview:</strong> Display all video thumbnails and titles in an organized, easy-to-navigate grid.</li>
-        <li><strong>Social Learning (If time allows):</strong> Add friends to shared playlists, track each other's progress, and maintain streaks together.</li>
+        <li><strong>Social Learning (future add-on):</strong> Add friends to shared playlists, track each other's progress, and maintain streaks together.</li>
         <li><strong>Responsive Design:</strong> Ensure a smooth user experience across desktop, tablet, and mobile devices.</li>
   </ul>
 
@@ -31,10 +31,9 @@
 ## Technology Stack:
   <ul>
         <li><strong>Frontend:</strong> HTML, CSS, JavaScript</li>
-        <li><strong>Backend:</strong> Node.js with Express (for API requests, scheduling, or user data handling)</li>
-        <li><strong>Database:</strong> MongoDB (to store user progress, schedules, and friends list)</li>
+        <li><strong>Backend:</strong> Node.js </li>
+        <li><strong>Database:</strong> MongoDB (Login/Sign Up) and Local Storage (to store user progress, streaks playlist data)</li>
         <li><strong>API:</strong> YouTube Data API v3</li>
-        <li><strong>Hosting:</strong> Vercel</li>
         <li><strong>Version Control:</strong> Git & GitHub</li>
     </ul>
   
