@@ -5,22 +5,21 @@
 
 ## Introduction:
 
-<h3>Description:</h3>
-    <p>YouTube as a learning source often goes underutilized due to a lack of structure, progress tracking, and motivation.</p>
-    <p>Project PlayPal changes that by turning any YouTube playlist into a personalized, goal-driven plan:</p>
-    <ul>
+<p>YouTube as a learning source often goes underutilized due to a lack of structure, progress tracking, and motivation.</p>
+<p>Project PlayPal changes that by turning any YouTube playlist into a personalized, goal-driven plan:</p>
+<ul>
         <li><strong>Custom Schedules:</strong> Input your free time, and we’ll plan your playlist.</li>
         <li><strong>Track Progress:</strong> Mark videos as watched and monitor your journey.</li>
         <li><strong>Stay Motivated:</strong> Missed a session? Get reminders to keep grinding.</li>
         <li><strong>Social Learning (If time allows):</strong> Add friends, collaborate in playlists, track progress, and maintain streaks   together.</li>
-    </ul>
-    <p>Let’s turn YouTube into your ultimate learning buddy!</p>
+</ul>
+<p>Let’s turn YouTube into your ultimate learning buddy!</p>
   
 ## Table of Contents:
 
 <ul>
         <li><strong>Carry your 'Grind': </strong>Ensure consistency by maintaining streaks with Grind Points.</li>
-        <li><strong>Have an Academic Comeback with 'Clutch':Boost confidence by overkilling the Grind. </strong>
+        <li><strong>Have an Academic Comeback with 'Clutch' </strong>:Boost confidence by overkilling the Grind. </strong>
         <li><strong>Progress Tracking: </strong>Mark videos as watched and view your completion percentage in real time.</li>
         <li><strong>Playlist Overview:</strong> Display all video thumbnails and titles in an organized, easy-to-navigate grid.</li>
         <li><strong>Social Learning (future add-on):</strong> Add friends to shared playlists, track each other's progress, and maintain streaks together.</li>
