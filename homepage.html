@@ -69,65 +69,157 @@
         <button class="cancel-btn" onclick="closeConfirmDialog()">No</button>
     </div>
 
+    <!--  Day Selection Popup (Newly Added) -->
+<div id="daySelectionForm" class="form-popup">
+    <div class="form-content">
+        <h3>Select Study Days</h3>
+        <div id="dayButtonsContainer">
+            <button class="day-btn" data-day="Monday">Monday</button>
+            <button class="day-btn" data-day="Tuesday">Tuesday</button>
+            <button class="day-btn" data-day="Wednesday">Wednesday</button>
+            <button class="day-btn" data-day="Thursday">Thursday</button>
+            <button class="day-btn" data-day="Friday">Friday</button>
+            <button class="day-btn" data-day="Saturday">Saturday</button>
+            <button class="day-btn" data-day="Sunday">Sunday</button>
+        </div>
+        <button id="confirmDaysBtn">Confirm</button>
+    </div>
+</div>
+
+
 <script>
-    let playlists = JSON.parse(localStorage.getItem('playlists')) || [];
-    const playlistContainer = document.getElementById('playlistContainer');
+let playlists = JSON.parse(localStorage.getItem('playlists')) || [];
+const playlistContainer = document.getElementById('playlistContainer');
 
-    window.onload = function () {
-        displayPlaylists();
-    };
+window.onload = function () {
+    displayPlaylists();
+};
 
-    const createPlaylistBtn = document.getElementById('createPlaylistBtn');
-    const playlistForm = document.getElementById('playlistForm');
-    const cancelBtn = document.querySelector('.cancelBtn');
+const createPlaylistBtn = document.getElementById('createPlaylistBtn');
+const playlistForm = document.getElementById('playlistForm');
+const daySelectionForm = document.getElementById('daySelectionForm'); // Added missing reference
+const cancelBtn = document.querySelector('.cancelBtn');
 
-    createPlaylistBtn.addEventListener('click', () => {
-        gsap.to(playlistForm, { duration: 0.5, opacity: 1, scale: 1 });
-        playlistForm.style.display = 'block';
+createPlaylistBtn.addEventListener('click', () => {
+    gsap.to(playlistForm, { duration: 0.5, opacity: 1, scale: 1 });
+    playlistForm.style.display = 'block';
+});
+
+cancelBtn.addEventListener('click', () => {
+    gsap.to(playlistForm, {
+        duration: 0.3, opacity: 0, scale: 0.7, onComplete: () => {
+            playlistForm.style.display = 'none';
+        }
     });
+    document.getElementById('playlistLink').value = "";
+    document.getElementById('playlistName').value = "";
+});
 
-    cancelBtn.addEventListener('click', () => {
-        gsap.to(playlistForm, {
-            duration: 0.3, opacity: 0, scale: 0.7, onComplete: () => {
-                playlistForm.style.display = 'none';
-            }
-        });
-        document.getElementById('playlistLink').value = "";
-        document.getElementById('playlistName').value = "";
-    });
+document.querySelector('.form-content').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const link = document.getElementById('playlistLink').value;
+    const name = document.getElementById('playlistName').value;
+    const playlistId = extractPlaylistId(link);
 
-    document.querySelector('.form-content').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const link = document.getElementById('playlistLink').value;
-        const name = document.getElementById('playlistName').value;
-        const playlistId = extractPlaylistId(link);
-        
-        if (playlistId) {
-            const thumbnail = await fetchPlaylistThumbnail(playlistId);
-            const newPlaylist = { name, link, image: thumbnail };
-            playlists.push(newPlaylist);
-            localStorage.setItem('playlists', JSON.stringify(playlists));
-            displayPlaylists();
-            
-            document.getElementById('playlistLink').value = "";
-            document.getElementById('playlistName').value = "";
-            
-            playlistForm.style.display = "block"; //ensure GSAP animation to run on blocked form
+    document.getElementById('playlistLink').value = "";
+    document.getElementById('playlistName').value = "";
 
-      gsap.to(playlistForm, {  //form transistions out
+    if (!playlistId) {
+        alert("Invalid YouTube playlist URL!");
+        return;
+    }
+
+    const thumbnail = await fetchPlaylistThumbnail(playlistId);
+    tempPlaylist = { name, link, image: thumbnail, days: [] }; // Store in temp variable
+
+    gsap.to(playlistForm, { // Hide form with animation
         duration: 0.3,
         opacity: 0,
         scale: 0.7,
         onComplete: () => {
-          playlistForm.style.display = "none"; //block --> none in form-popup
+            playlistForm.style.display = "none"; 
+            showDaySelectionPopup(); // Open day selection popup
         },
-      });
-
-
-        } else {
-            alert("Invalid YouTube playlist URL!");
-        }
     });
+});
+
+function showDaySelectionPopup() {
+    gsap.to(daySelectionForm, { duration: 0.5, opacity: 1, scale: 1 });
+    daySelectionForm.style.display = "block";
+}
+
+function closeDaySelectionPopup() {
+    gsap.to(daySelectionForm, {
+        duration: 0.3,
+        opacity: 0,
+        scale: 0.7,
+        onComplete: () => {
+            daySelectionForm.style.display = "none";
+        },
+    });
+}
+
+document.querySelectorAll(".day-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+        button.classList.toggle("selected");
+        button.style.backgroundColor = button.classList.contains("selected") ? "green" : "red";
+    });
+});
+
+document.getElementById("confirmDaysBtn").addEventListener("click", () => {
+    let selectedDays = Array.from(document.querySelectorAll(".day-btn.selected")).map(btn => btn.dataset.day);
+
+    if (selectedDays.length === 0) {
+        alert("Please select at least one day.");
+        return;
+    }
+
+    // Store selected days for the current playlist only
+    let newPlaylist = { ...tempPlaylist, days: [...selectedDays] };
+    playlists.push(newPlaylist);
+    localStorage.setItem("playlists", JSON.stringify(playlists));
+
+    // Close the day selection popup and refresh the playlist display
+    closeDaySelectionPopup();
+    displayPlaylists();
+
+    // Flush selected days from UI buttons
+    document.querySelectorAll(".day-btn").forEach((button) => {
+        button.classList.remove("selected"); // Ensure selection is cleared
+        button.style.backgroundColor = "red";  
+    });
+
+    // Reset tempPlaylist to avoid accidental reuse
+    tempPlaylist = {};
+});
+
+function displayPlaylists(filteredPlaylists = playlists) {
+    playlistContainer.innerHTML = ""; // Clear previous content
+
+    if (filteredPlaylists.length === 0) {
+        const noPlaylistsMessage = document.createElement("p");
+        noPlaylistsMessage.classList.add("no-playlists-message");
+        noPlaylistsMessage.textContent = "No Playlists Found!";
+        playlistContainer.appendChild(noPlaylistsMessage);
+        return;
+    }
+
+    filteredPlaylists.forEach((playlist, index) => {
+        const card = document.createElement('div');
+        card.classList.add('playlist-card');
+        card.innerHTML = `
+            <img class="altThumb" onclick="goToPlaylistPage('${playlist.link}')" src="${playlist.image}" alt="Thumbnail">
+            <div class="content">
+                <p class="playlist-name">${playlist.name}</p>
+                <p class="constText">Study Days: ${playlist.days.join(", ")}</p> <!-- Display selected days -->
+                <button onclick="confirmDelete(${index})">Delete</button>
+            </div>
+        `;
+        playlistContainer.appendChild(card);
+    });
+}
+
 
     function extractPlaylistId(url) {
         const regex = /[?&]list=([a-zA-Z0-9_-]+)/;
@@ -149,30 +241,7 @@
         }
     }
 
-    function displayPlaylists(filteredPlaylists = playlists) {
-    playlistContainer.innerHTML = ""; // Clear previous content
-
-    if (filteredPlaylists.length === 0) {
-        const noPlaylistsMessage = document.createElement("p");
-        noPlaylistsMessage.classList.add("no-playlists-message");
-        noPlaylistsMessage.textContent = "No Playlists Found!";
-        playlistContainer.appendChild(noPlaylistsMessage);
-        return;
-    }
-
-    filteredPlaylists.forEach((playlist, index) => {
-        const card = document.createElement('div');
-        card.classList.add('playlist-card');
-        card.innerHTML = `
-            <img class="altThumb" onclick="goToPlaylistPage('${playlist.link}')" src="${playlist.image}" alt="Thumbnail">
-            <div class="content">
-                <p class="playlist-name">${playlist.name}</p>
-                <button onclick="confirmDelete(${index})">Delete</button>
-            </div>
-        `;
-        playlistContainer.appendChild(card);
-    });
-}
+   
 
 
     

@@ -246,7 +246,7 @@ body.dark-mode {
     color: var(--text-color); /* for STATIC color*/
 }
 
-.altThumb {
+.constText {
     font-size: 14px;
     text-align: center;
     margin-top: 5px;
@@ -308,7 +308,57 @@ button:hover {
 
 body.dark-mode .no-playlists-message {
     color: white; /* White for visibility in dark mode */
+
 }
+
+/* days form */
+
+ .form-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: black;
+        padding: 20px;
+        border-radius: 15px;
+        width: 350px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        text-align: center;
+    }
+
+    .day-btn {
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s ease-in-out;
+    }
+
+    .day-btn.selected {
+        background-color: green;
+    }
+
+    #confirmDaysBtn {
+        margin-top: 15px;
+        background-color: white;
+        color: black;
+        border: 2px solid white;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background 0.3s;
+    }
+
+    #confirmDaysBtn:hover {
+        background-color: green;
+        color: white;
+    }
 
 
 
