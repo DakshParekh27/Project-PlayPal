@@ -1,11 +1,3 @@
-//features : thumbnail called, "No playlist yet" each empty case mein hai..
-
-
-//general improvement : integrate videos.html at clicking thumbnail
-//                      then add other calc backend features
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,374 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PlayPal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.1/gsap.min.js"></script>
-    <style>
-/* General Body Styling */
-body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(#F4EFEF);
-    background-size: 400% 400%;
-    animation: gradientAnimation 6s ease infinite;
-    overflow-x: hidden;
-}
+   <link rel="stylesheet" href="homepage.css">
 
-@keyframes gradientAnimation {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-/* Navbar Styling */
-.navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #FF0000;
-    padding: 15px 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-}
-
-.logo-container {
-    background: white; /* White background for the logo box */
-    padding: 15px 25px; /* Adjust padding to create a rectangular effect */
-    border-radius: 5px; /* Slightly rounded corners */
-    display: flex;
-    align-items: center;
-}
-
-.logo {
-    height: 50px; /* Adjust size as needed */
-    width: auto;
-}
-
-.product-name {
-    color: white; /* Text color */
-    font-size: 20px; /* Adjust size */
-    font-weight: bold;
-    margin-left: 10px; /* Space between logo box and text */
-}
-/* Centered Search Box */
-.search-box {
-    flex: 1;
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 12px;
-    font-size: 16px;
-    border: 2px solid black;
-    border-radius: 20px;
-    text-align: center;
-    transition: all 0.3s ease-in-out;
-}
-
-/* Right Section: Icons & Dark Mode Button */
-.right-section {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-/* Dark Mode Button */
-.dark-mode-btn {
-    background-color: white;
-    color: black;
-    border: 2px solid black;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease-in-out;
-}
-
-.dark-mode-btn:hover {
-    background-color: black;
-    color: white;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        text-align: center;
-        padding: 10px;
-    }
-
-   
-
-    .search-box {
-        width: 80%;
-        margin: 10px 0;
-    }
-
-    .right-section {
-        margin-top: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    
-
-    .search-box {
-        width: 90%;
-    }
-}
-
-/* Playlist Button */
-#createPlaylistBtn {
-    position: fixed;
-    right: 35px;
-    bottom: 30px;
-    padding: 15px 30px;
-    background-color: #FF0000;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 50px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    z-index: 1001;
-}
-
-#createPlaylistBtn:hover {
-    background-color: #ff4500;
-    transform: scale(1.05);
-}
-
-/* Playlist Card Styling */
-.playlist-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-    margin-top: 100px;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.playlist-card {
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 280px;
-}
-
-.playlist-card img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-}
-
-.playlist-card .content {
-    padding: 15px;
-    text-align: center;
-}
-
-.playlist-card .content h4 {
-    margin: 0 0 10px;
-}
-
-
-
-
-.playlist-card button {
-    background-color: #ff4500;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.playlist-card button:hover {
-    background-color: #d63d00;
-}
-
-/* Custom Confirmation Dialog */
-.confirm-dialog {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #1a1a1a;
-    padding: 30px;
-    border-radius: 15px;
-    width: 300px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-    color: white;
-    text-align: center;
-    z-index: 1002;
-}
-
-.confirm-dialog button {
-    padding: 10px 20px;
-    margin: 10px 5px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.confirm-dialog .confirm-btn {
-    background-color: #32CD32;
-    color: white;
-}
-
-.confirm-dialog .confirm-btn:hover {
-    background-color: #228B22;
-}
-
-.confirm-dialog .cancel-btn {
-    background-color: #dc143c;
-    color: white;
-}
-
-.confirm-dialog .cancel-btn:hover {
-    background-color: #FF0000;
-}
-
-/* Dark Mode */
-body.dark-mode {
-    background-color: #36393e;
-    color: #ffffff;
-}
-
-
-:root {
-    --text-color: #000; /* Default light mode text color */
-}
-
-.dark-mode {
-    --text-color: #070707; /* Dark mode text color */
-}
-
-.playlist-name {
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 5px;
-    color: var(--text-color); /* Use variable for STATIC color change */
-}
-
-/* Button Styling */
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    background-color: #FF0000;
-    color: white;
-    transition: background 0.3s ease;
-}
-
-button:hover {
-    background-color: #52c8e8;
-}
-
-/* Sun and Moon Theme Toggle */
-@import "https://unpkg.com/open-props/easings.min.css";
-
-.sun-and-moon> :is(.moon, .sun, .sun-beams) {
-    transform-origin: center;
-}
-
-.sun-and-moon> :is(.moon, .sun) {
-    fill: var(--icon-fill);
-}
-
-.theme-toggle:is(:hover, :focus-visible)>.sun-and-moon> :is(.moon, .sun) {
-    fill: var(--icon-fill-hover);
-}
-
-.sun-and-moon>.sun-beams {
-    stroke: var(--icon-fill);
-    stroke-width: 2px;
-}
-
-.theme-toggle:is(:hover, :focus-visible) .sun-and-moon>.sun-beams {
-    stroke: var(--icon-fill-hover);
-}
-
-[data-theme="dark"] .sun-and-moon>.sun {
-    transform: scale(1.75);
-}
-
-[data-theme="dark"] .sun-and-moon>.sun-beams {
-    opacity: 0;
-}
-
-[data-theme="dark"] .sun-and-moon>.moon>circle {
-    transform: translateX(-7px);
-}
-
-@supports (cx: 1) {
-    [data-theme="dark"] .sun-and-moon>.moon>circle {
-        cx: 17;
-        transform: translateX(0);
-    }
-}
-.form-popup {
-    display: none; /* Hide initially */
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: black;
-    padding: 20px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 15px;
-    z-index: 1000;
-}
-
-.form-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    color: white;
-    border-radius:14px;
-}
-
-.cancelBtn {
-    background: #FF0000;
-    color: white;
-    padding: 10px 10px;
-    border: none;
-    cursor: pointer;
-}
-
-.cancelBtn:hover {
-    background: #B22222;
-}
-
-.no-playlists-message {
-    color: #333; /* Dark gray for visibility in light mode */
-}
-
-body.dark-mode .no-playlists-message {
-    color: white; /* White for visibility in dark mode */
-}
-
-
-
-
-
-    </style>
 </head>
 
 <body>
@@ -411,8 +37,7 @@ body.dark-mode .no-playlists-message {
         <img src="Logo.jpeg" alt="PlayPal Logo" class="logo">
         <span class="product-name">PlayPal</span>
         <input type="text" class="search-box" id="searchBox" placeholder="Search Playlists..."
-        
-            oninput="filterPlaylists()">
+         oninput="filterPlaylists()">
         <div class="right-icons">
             <div class="container">
                 <button id="darkModeToggle">🌙</button>
@@ -510,30 +135,31 @@ body.dark-mode .no-playlists-message {
         }
     }
 
-    function displayPlaylists() {
-        playlistContainer.innerHTML = ""; // Clear previous content
+    function displayPlaylists(filteredPlaylists = playlists) {
+    playlistContainer.innerHTML = ""; // Clear previous content
 
-        if (playlists.length === 0) {
-            const noPlaylistsMessage = document.createElement("p");
-            noPlaylistsMessage.classList.add("no-playlists-message");
-            noPlaylistsMessage.textContent = "No Playlists Yet!";
-            playlistContainer.appendChild(noPlaylistsMessage);
-            return;
-        }
-
-        playlists.forEach((playlist, index) => {
-            const card = document.createElement('div');
-            card.classList.add('playlist-card');
-            card.innerHTML = `
-                    <img onclick="goToPlaylistPage('${playlist.link}')" src="${playlist.image}" alt="Thumbnail">
-                    <div class="content">
-                        <p class="playlist-name">${playlist.name}</p>
-                        <button onclick="confirmDelete(${index})">Delete</button>
-                    </div>
-                `;
-            playlistContainer.appendChild(card);
-        });
+    if (filteredPlaylists.length === 0) {
+        const noPlaylistsMessage = document.createElement("p");
+        noPlaylistsMessage.classList.add("no-playlists-message");
+        noPlaylistsMessage.textContent = "No Playlists Found!";
+        playlistContainer.appendChild(noPlaylistsMessage);
+        return;
     }
+
+    filteredPlaylists.forEach((playlist, index) => {
+        const card = document.createElement('div');
+        card.classList.add('playlist-card');
+        card.innerHTML = `
+            <img class="altThumb" onclick="goToPlaylistPage('${playlist.link}')" src="${playlist.image}" alt="Thumbnail">
+            <div class="content">
+                <p class="playlist-name">${playlist.name}</p>
+                <button onclick="confirmDelete(${index})">Delete</button>
+            </div>
+        `;
+        playlistContainer.appendChild(card);
+    });
+}
+
 
     
     function goToPlaylistPage(link) {
@@ -571,12 +197,11 @@ body.dark-mode .no-playlists-message {
         }
         closeConfirmDialog();
     }
-
-    function filterPlaylists() {
-        const search = document.getElementById('searchBox').value.toLowerCase();
-        const filtered = playlists.filter(p => p.name.toLowerCase().includes(search));
-        displayPlaylists(filtered);
-    }
+function filterPlaylists() {
+    const search = document.getElementById('searchBox').value.toLowerCase();
+    const filteredPlaylists = playlists.filter(p => p.name.toLowerCase().includes(search));
+    displayPlaylists(filteredPlaylists);
+}
 
     document.addEventListener("DOMContentLoaded", function () {
         let playlists = JSON.parse(localStorage.getItem("playlists")) || [];
