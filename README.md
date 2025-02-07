@@ -39,7 +39,7 @@
 
 ## Contributors:
 
-Team Name: PlayPal
+Team Name: Project PlayPal
 
 * [Daksh Parekh](https://github.com/DakshParekh27)<br />
 * [Moksh Jain](https://github.com/Moksh-Jain-2212)<br />
