@@ -50,14 +50,14 @@ body {
 
 .product-name {
     color: white; /* Text color */
-    font-size: 30px; /* Adjust size */
+    font-size: 20px; /* Adjust size */
     font-weight: bold;
     margin-left: 10px; /* Space between logo box and text */
 }
 /* Centered Search Box */
 .search-box {
     flex: 1;
-    max-width: 500px;
+    max-width: 700px;
     margin: 0 auto;
     padding: 12px;
     font-size: 16px;
@@ -92,7 +92,7 @@ body {
     }
 
     .right-section {
-        margin-top: 10px;
+        margin-top: 100px;
     }
 }
 
@@ -179,7 +179,7 @@ body {
     background-color: #d63d00;
 }
 
-/* Custom Confirmation Dialog */
+/* Confirm to delete popup */
 .confirm-dialog {
     display: none;
     position: fixed;
@@ -236,7 +236,7 @@ body.dark-mode {
 
 .dark-mode {
     --text-color: #070707; /* Dark mode text color */
-}
+} 
 
 .playlist-name {
     font-size: 14px;
@@ -253,8 +253,8 @@ body.dark-mode {
     color: var(--text-color); /* for STATIC color */
 }
 
-/* Button Styling */
-button {
+
+button {    /* Button Styling */
     padding: 10px 20px;
     font-size: 16px;
     border: none;
@@ -269,48 +269,6 @@ button:hover {
     background-color: #ea5d06;
 }
 
-/* Sun and Moon Theme Toggle */
-@import "https://unpkg.com/open-props/easings.min.css";
-
-.sun-and-moon> :is(.moon, .sun, .sun-beams) {
-    transform-origin: center;
-}
-
-.sun-and-moon> :is(.moon, .sun) {
-    fill: var(--icon-fill);
-}
-
-.theme-toggle:is(:hover, :focus-visible)>.sun-and-moon> :is(.moon, .sun) {
-    fill: var(--icon-fill-hover);
-}
-
-.sun-and-moon>.sun-beams {
-    stroke: var(--icon-fill);
-    stroke-width: 2px;
-}
-
-.theme-toggle:is(:hover, :focus-visible) .sun-and-moon>.sun-beams {
-    stroke: var(--icon-fill-hover);
-}
-
-[data-theme="dark"] .sun-and-moon>.sun {
-    transform: scale(1.75);
-}
-
-[data-theme="dark"] .sun-and-moon>.sun-beams {
-    opacity: 0;
-}
-
-[data-theme="dark"] .sun-and-moon>.moon>circle {
-    transform: translateX(-7px);
-}
-
-@supports (cx: 1) {
-    [data-theme="dark"] .sun-and-moon>.moon>circle {
-        cx: 17;
-        transform: translateX(0);
-    }
-}
 .form-popup {
     display: none; /* Hide initially */
     position: fixed;
