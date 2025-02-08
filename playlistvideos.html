@@ -7,166 +7,207 @@
   <link rel="stylesheet" href="playlistvideos.css">
 </head>
 <body>
-
-    <!-- 🔴 Navbar with Progress Tracker & Playlist Title -->
-    <div class="navbar">
-        <!-- Left: Progress Tracker -->
-        <div class="progress-container">
-            <svg class="progress-circle" viewBox="0 0 36 36">
-                <path class="progress-bar-bg" fill="none" stroke="#f3f3f3" stroke-width="4"
-                      d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"></path>
-                <path class="progress-bar" fill="none" stroke="#00ff00" stroke-width="4" stroke-dasharray="100, 100"
-                      d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"></path>
-            </svg>
-            <span class="progress-text">0%</span>
-        </div>
-
-        <!-- Center: Playlist Title -->
-        <div class="playlist-title">Playlist Videos</div>
+ <!-- Navbar -->
+  <div class="navbar">
+    <div class="left-section">
+      <div class="progress-container">
+        <svg class="progress-circle" viewBox="0 0 36 36">
+          <path class="progress-bar-bg" fill="none" stroke="#f3f3f3" stroke-width="4"
+            d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"></path>
+          <path class="progress-bar" fill="none" stroke="#00ff00" stroke-width="4" stroke-dasharray="0,100"
+            d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"></path>
+        </svg>
+        <span class="progress-text">0%</span>
+      </div>
+      <div class="counter-container">
+        <div class="counter" id="grindCounter">Grind: 0</div>
+        <div class="counter" id="clutchCounter">Clutch: 0</div>
+      </div>
     </div>
-
-    <!-- 📺 Video List Container -->
-    <div class="video-container" id="videosList"></div>
-
-    <!-- 🔄 Load More Button -->
-    <button class="load-more" onclick="loadMoreVideos()">Load More Videos</button>
-
+    <div class="playlist-title">Playlist Videos</div>
+  </div>
+  
+  <!-- Video Container -->
+  <div class="video-container" id="videosList"></div>
+  <button class="load-more" onclick="loadMoreVideos()">Load More Videos</button>
+  
   <script>
-    const API_KEY = "AIzaSyDEN8VXe2Bda0rD8h7P6H_AeuQjw5IPYs4";
-    let playlistId = new URLSearchParams(window.location.search).get("playlistId");
-    let nextPageToken = "";
-    let totalPlaylistMinutes = 0;
-    let watchedMinutes = 0;
-    let videoDurations = {};
-    let allVideos = [];
+   // --------------------------
+// Global Variables
+// --------------------------
+const API_KEY = "AIzaSyDEN8VXe2Bda0rD8h7P6H_AeuQjw5IPYs4";
+let playlistId = new URLSearchParams(window.location.search).get("playlistId");
+let nextPageToken = "";
+let totalPlaylistMinutes = 0;
+let watchedMinutes = 0;
+let videoDurations = {};
+let allVideos = [];
 
-    function fetchPlaylistVideos() {
-      if (!playlistId) {
+// Retrieve stored playlists array from localStorage
+let storedPlaylists = JSON.parse(localStorage.getItem("playlists")) || [];
+
+// Find the current playlist (each playlist object has days, grind, clutch, etc.)
+let currentPlaylistIndex = storedPlaylists.findIndex(pl => extractPlaylistId(pl.link) === playlistId);
+let currentPlaylist = storedPlaylists[currentPlaylistIndex] || null;
+
+// Ensure current playlist exists in localStorage and preserve stored Grind/Clutch values
+if (currentPlaylist) {
+    if (currentPlaylist.grind === undefined) currentPlaylist.grind = 0;
+    if (currentPlaylist.clutch === undefined) currentPlaylist.clutch = 0;
+    if (!currentPlaylist.lastGrindDate) currentPlaylist.lastGrindDate = "";
+    if (!currentPlaylist.lastClutchDate) currentPlaylist.lastClutchDate = "";
+
+    // Update the stored playlist object if it was missing these properties
+    storedPlaylists[currentPlaylistIndex] = currentPlaylist;
+    localStorage.setItem("playlists", JSON.stringify(storedPlaylists));
+}
+
+// Retrieve current study days for this playlist
+let currentStudyDays = currentPlaylist ? (currentPlaylist.days || []) : [];
+
+// --------------------------
+// Utility Functions
+// --------------------------
+
+function extractPlaylistId(url) {
+    const regex = /[?&]list=([a-zA-Z0-9_-]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+}
+
+function getDayString() {
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return days[new Date().getDay()];
+}
+
+// --------------------------
+// Fetching Playlist Videos & Durations
+// --------------------------
+
+function fetchPlaylistVideos() {
+    if (!playlistId) {
         alert("No playlist ID found!");
         return;
-      }
-
-      const apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=50&pageToken=${nextPageToken}&key=${API_KEY}`;
-
-      fetch(apiUrl)
+    }
+    const apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=50&pageToken=${nextPageToken}&key=${API_KEY}`;
+    fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-          allVideos = [...allVideos, ...data.items];
-          nextPageToken = data.nextPageToken || "";
-          renderVideos(data.items);
-
-          if (nextPageToken) {
-            document.querySelector(".load-more").style.display = "block";
-          } else {
-            document.querySelector(".load-more").style.display = "none";
-          }
-
-          getVideoDurations(data.items.map(video => video.snippet.resourceId.videoId));
+            allVideos = [...allVideos, ...data.items];
+            nextPageToken = data.nextPageToken || "";
+            renderVideos(data.items);
+            document.querySelector(".load-more").style.display = nextPageToken ? "block" : "none";
+            getVideoDurations(data.items.map(video => video.snippet.resourceId.videoId));
         })
         .catch(error => console.error("Error fetching playlist:", error));
-    }
+}
 
-    function loadMoreVideos() {
-      fetchPlaylistVideos();
-    }
-
-    function getVideoDurations(videoIds) {
-      const durationApiUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds.join(",")}&key=${API_KEY}`;
-
-      fetch(durationApiUrl)
+function getVideoDurations(videoIds) {
+    const durationApiUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds.join(",")}&key=${API_KEY}`;
+    fetch(durationApiUrl)
         .then(response => response.json())
         .then(data => {
-          data.items.forEach(video => {
-            const videoId = video.id;
-            const duration = parseISO8601Duration(video.contentDetails.duration);
-            videoDurations[videoId] = duration;
-            totalPlaylistMinutes += duration;
-          });
-
-          updateProgress();
+            data.items.forEach(video => {
+                const videoId = video.id;
+                const duration = parseISO8601Duration(video.contentDetails.duration);
+                videoDurations[videoId] = duration;
+                totalPlaylistMinutes += duration;
+            });
+            updateProgress();
         })
         .catch(error => console.error("Error fetching video durations:", error));
-    }
+}
 
-    function parseISO8601Duration(duration) {
-      let match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
-      let hours = match[1] ? parseInt(match[1].replace("H", "")) : 0;
-      let minutes = match[2] ? parseInt(match[2].replace("M", "")) : 0;
-      let seconds = match[3] ? parseInt(match[3].replace("S", "")) : 0;
-      return hours * 60 + minutes + seconds / 60;
-    }
+function parseISO8601Duration(duration) {
+    let match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+    let hours = match[1] ? parseInt(match[1].replace("H", "")) : 0;
+    let minutes = match[2] ? parseInt(match[2].replace("M", "")) : 0;
+    let seconds = match[3] ? parseInt(match[3].replace("S", "")) : 0;
+    return hours * 60 + minutes + seconds / 60;
+}
 
-    function renderVideos(videos) {
-      const videosList = document.getElementById("videosList");
+// --------------------------
+// Rendering Videos & Toggling Watched State
+// --------------------------
 
-      videos.forEach(video => {
+function renderVideos(videos) {
+    const videosList = document.getElementById("videosList");
+    videos.forEach(video => {
         const videoId = video.snippet.resourceId.videoId;
         const thumbnailUrl = video.snippet.thumbnails.medium.url;
         const title = video.snippet.title;
         const watchedVideos = JSON.parse(localStorage.getItem("watchedVideos")) || [];
-
         const videoCard = document.createElement("div");
         videoCard.classList.add("video-card");
         if (watchedVideos.includes(videoId)) {
-          videoCard.classList.add("watched");
+            videoCard.classList.add("watched");
         }
-
         videoCard.innerHTML = `
-          <img src="${thumbnailUrl}" onclick="openVideo(event, '${videoId}')" alt="${title}">
-          <p>${title}</p>
+            <img src="${thumbnailUrl}" onclick="openVideo(event, '${videoId}')" alt="${title}">
+            <p>${title}</p>
         `;
-
         videoCard.addEventListener("click", (event) => {
-          if (!event.target.closest("img")) {
-            toggleWatched(videoCard, videoId);
-          }
+            if (!event.target.closest("img")) {
+                toggleWatched(videoCard, videoId);
+            }
         });
-
         videosList.appendChild(videoCard);
-      });
+    });
+    updateProgress();
+}
 
-      updateProgress();
-    }
+function toggleWatched(videoCard, videoId) {
+    let watchedVideos = JSON.parse(localStorage.getItem("watchedVideos")) || [];
+    const todayStr = getDayString();
 
-    function openVideo(event, videoId) {
-      event.stopPropagation();
-      window.open(`https://www.youtube.com/watch?v=${videoId}`, "_blank");
-    }
-
-    function toggleWatched(videoCard, videoId) {
-      let watchedVideos = JSON.parse(localStorage.getItem("watchedVideos")) || [];
-
-      if (watchedVideos.includes(videoId)) {
+    if (watchedVideos.includes(videoId)) {
         watchedVideos = watchedVideos.filter(id => id !== videoId);
         watchedMinutes -= videoDurations[videoId] || 0;
         videoCard.classList.remove("watched");
-      } else {
+    } else {
         watchedVideos.push(videoId);
         watchedMinutes += videoDurations[videoId] || 0;
         videoCard.classList.add("watched");
-      }
 
-      localStorage.setItem("watchedVideos", JSON.stringify(watchedVideos));
-      updateProgress();
+        if (currentPlaylist) {
+            if (currentStudyDays.includes(todayStr)) {
+                if (currentPlaylist.lastGrindDate !== todayStr) {
+                    currentPlaylist.grind++;
+                    currentPlaylist.lastGrindDate = todayStr;
+                }
+            } else {
+                if (currentPlaylist.lastClutchDate !== todayStr) {
+                    currentPlaylist.clutch++;
+                    currentPlaylist.lastClutchDate = todayStr;
+                }
+            }
+
+            // Update stored playlists with the updated currentPlaylist
+            storedPlaylists[currentPlaylistIndex] = currentPlaylist;
+            localStorage.setItem("playlists", JSON.stringify(storedPlaylists));
+        }
     }
+
+    localStorage.setItem("watchedVideos", JSON.stringify(watchedVideos));
+    updateProgress();
+    updateCountersUI();
+}
+
 function updateProgress() {
-    let watchedVideos = JSON.parse(localStorage.getItem("watchedVideos")) || [];
-    
-    // Recalculate watched minutes based on stored watched videos
-    watchedMinutes = watchedVideos.reduce((total, videoId) => total + (videoDurations[videoId] || 0), 0);
-
-    // Calculate progress percentage
     let progress = totalPlaylistMinutes > 0 ? (watchedMinutes / totalPlaylistMinutes) * 100 : 0;
-
-    // Ensure progress never goes below 0%
-    progress = Math.max(0, progress);
-
+    progress = Math.max(0, progress); // Ensure progress never falls below 0%
     document.querySelector(".progress-text").innerText = `${Math.round(progress)}%`;
     document.querySelector(".progress-bar").setAttribute("stroke-dasharray", `${progress}, 100`);
 }
 
+function updateCountersUI() {
+    document.getElementById("grindCounter").innerText = `Grind: ${currentPlaylist.grind}`;
+    document.getElementById("clutchCounter").innerText = `Clutch: ${currentPlaylist.clutch}`;
+}
 
-    fetchPlaylistVideos();
+// Load playlist videos & update counters
+fetchPlaylistVideos();
+updateCountersUI();
   </script>
 </body>
 </html>
