@@ -11,7 +11,7 @@
         <li><strong>Custom Schedules:</strong> Input your free time, and we’ll plan your playlist.</li>
         <li><strong>Track Progress:</strong> Mark videos as watched and monitor your journey.</li>
         <li><strong>Stay Motivated:</strong> Missed a session? Get reminders to keep grinding.</li>
-        <li><strong>Social Learning (If time allows):</strong> Add friends, collaborate in playlists, track progress, and maintain streaks   together.</li>
+        <li><strong>Social Learning (if time allows):</strong> Add friends, collaborate in playlists, track progress, and maintain streaks together.</li>
 </ul>
 <p>Let’s turn YouTube into your ultimate learning buddy!</p>
   
