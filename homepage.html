@@ -12,7 +12,6 @@
 
 <body>
 
-    //toggle button html, taken from free open-soure internet elements website
     <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite">
         <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
             <mask class="moon" id="moon-mask">
@@ -33,7 +32,6 @@
         </svg>
     </button>
     
-    //navbar html
     <div class="navbar">
         <img src="Logo.jpeg" alt="PlayPal Logo" class="logo">
         <span class="product-name">PlayPal</span>
@@ -69,7 +67,6 @@
         <button class="cancel-btn" onclick="closeConfirmDialog()">No</button>
     </div>
 
-    // Day Selection Popup  
 <div id="daySelectionForm" class="form-popup">
     <div class="form-content">
         <h3>Select Study Days</h3>
@@ -243,7 +240,7 @@ function displayPlaylists(filteredPlaylists = playlists) {
 //using YouTube Data API
     
     async function fetchPlaylistThumbnail(playlistId) {
-        const API_KEY = "AIzaSyDEN8VXe2Bda0rD8h7P6H_AeuQjw5IPYs4";  //our project's API key
+        const API_KEY = "AIzaSyAd4mcY0sSTQ3RG-5eNMKWB8-UjzRk1ycQ";  //our project's API key
         const apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=1&key=${API_KEY}`;
 
         try {
