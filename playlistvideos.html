@@ -32,9 +32,9 @@
   <button class="load-more" onclick="loadMoreVideos()">Load More Videos</button>
   
   <script>
-   // --------------------------
+   
 // Global Variables
-// --------------------------
+
 const API_KEY = "AIzaSyDEN8VXe2Bda0rD8h7P6H_AeuQjw5IPYs4";
 let playlistId = new URLSearchParams(window.location.search).get("playlistId");
 let nextPageToken = "";
@@ -65,9 +65,8 @@ if (currentPlaylist) {
 // Retrieve current study days for this playlist
 let currentStudyDays = currentPlaylist ? (currentPlaylist.days || []) : [];
 
-// --------------------------
+
 // Utility Functions
-// --------------------------
 
 function extractPlaylistId(url) {
     const regex = /[?&]list=([a-zA-Z0-9_-]+)/;
@@ -80,9 +79,9 @@ function getDayString() {
     return days[new Date().getDay()];
 }
 
-// --------------------------
+
 // Fetching Playlist Videos & Durations
-// --------------------------
+
 
 function fetchPlaylistVideos() {
     if (!playlistId) {
@@ -126,9 +125,9 @@ function parseISO8601Duration(duration) {
     return hours * 60 + minutes + seconds / 60;
 }
 
-// --------------------------
+
 // Rendering Videos & Toggling Watched State
-// --------------------------
+
 
 function renderVideos(videos) {
     const videosList = document.getElementById("videosList");
@@ -195,7 +194,7 @@ function toggleWatched(videoCard, videoId) {
 
 function updateProgress() {
     let progress = totalPlaylistMinutes > 0 ? (watchedMinutes / totalPlaylistMinutes) * 100 : 0;
-    progress = Math.max(0, progress); // Ensure progress never falls below 0%
+    progress = Math.max(0, progress); // to pivot progress at 0%
     document.querySelector(".progress-text").innerText = `${Math.round(progress)}%`;
     document.querySelector(".progress-bar").setAttribute("stroke-dasharray", `${progress}, 100`);
 }
