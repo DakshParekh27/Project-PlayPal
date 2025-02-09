@@ -202,7 +202,6 @@ document.getElementById("confirmDaysBtn").addEventListener("click", () => {
     // Reset tempPlaylist to avoid accidental reuse
     tempPlaylist = {};
 });
-
 function displayPlaylists(filteredPlaylists = playlists) {
     playlistContainer.innerHTML = ""; // Clear previous content
 
@@ -215,14 +214,16 @@ function displayPlaylists(filteredPlaylists = playlists) {
     }
 
     filteredPlaylists.forEach((playlist, index) => {
-        const card = document.createElement('div');
-        card.classList.add('playlist-card');
-        //css card content references 
+        const card = document.createElement("div");
+        card.classList.add("playlist-card");
+
+        const studyDays = Array.isArray(playlist.days) ? playlist.days.join(", ") : "No study days set";
+
         card.innerHTML = `
             <img class="altThumb" onclick="goToPlaylistPage('${playlist.link}')" src="${playlist.image}" alt="Thumbnail">
             <div class="content">
                 <p class="playlist-name">${playlist.name}</p>
-                <p class="constText">Study Days: ${playlist.days.join(", ")}</p> <!-- Display selected days -->
+                <p class="constText">Study Days: ${studyDays}</p> 
                 <button onclick="confirmDelete(${index})">Delete</button>
             </div>
         `;
@@ -240,7 +241,7 @@ function displayPlaylists(filteredPlaylists = playlists) {
 //using YouTube Data API
     
     async function fetchPlaylistThumbnail(playlistId) {
-        const API_KEY = "AIzaSyAd4mcY0sSTQ3RG-5eNMKWB8-UjzRk1ycQ";  //our project's API key
+        const API_KEY = "YOUR_API_KEY_HERE";  //our project's API key
         const apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=1&key=${API_KEY}`;
 
         try {

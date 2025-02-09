@@ -35,7 +35,7 @@
    
 // Global Variables
 
-const API_KEY = "AIzaSyAd4mcY0sSTQ3RG-5eNMKWB8-UjzRk1ycQ";
+const API_KEY = "YOUR_API_KEY_HERE";
 let playlistId = new URLSearchParams(window.location.search).get("playlistId");
 let nextPageToken = "";
 let totalPlaylistMinutes = 0;
@@ -128,32 +128,39 @@ function parseISO8601Duration(duration) {
 
 // Rendering Videos & Toggling Watched State
 
-
 function renderVideos(videos) {
     const videosList = document.getElementById("videosList");
     videos.forEach(video => {
         const videoId = video.snippet.resourceId.videoId;
+        const videoLink = `https://www.youtube.com/watch?v=${videoId}`;  
         const thumbnailUrl = video.snippet.thumbnails.medium.url;
         const title = video.snippet.title;
         const watchedVideos = JSON.parse(localStorage.getItem("watchedVideos")) || [];
         const videoCard = document.createElement("div");
         videoCard.classList.add("video-card");
+
         if (watchedVideos.includes(videoId)) {
             videoCard.classList.add("watched");
         }
+
         videoCard.innerHTML = `
-            <img src="${thumbnailUrl}" onclick="openVideo(event, '${videoId}')" alt="${title}">
+            <a href="${videoLink}" target="_blank"> 
+                <img src="${thumbnailUrl}" alt="${title}">
+            </a>
             <p>${title}</p>
         `;
+
         videoCard.addEventListener("click", (event) => {
             if (!event.target.closest("img")) {
                 toggleWatched(videoCard, videoId);
             }
         });
+
         videosList.appendChild(videoCard);
     });
     updateProgress();
 }
+
 
 function toggleWatched(videoCard, videoId) {
     let watchedVideos = JSON.parse(localStorage.getItem("watchedVideos")) || [];
