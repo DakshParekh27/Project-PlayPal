@@ -49,3 +49,5 @@ Team Name: Project PlayPal
 ### Made at:
 
 <a href="https://weekendofcode.computercodingclub.in/"> <img src="https://i.postimg.cc/Z9fC676j/devjam.jpg" height=30px> </a>
+
+[PPT Presentation : Incomplete](https://shorturl.at/CEaBh)
